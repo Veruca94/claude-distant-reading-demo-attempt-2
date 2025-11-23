@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shakespeare Plays: Distant Reading Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.2.2/src/wordcloud2.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Shakespeare Plays: Distant Reading Analysis</h1>
+            <p class="subtitle">Computational analysis of five Shakespeare plays</p>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar Navigation -->
+            <nav class="sidebar">
+                <h2>Texts</h2>
+                <ul id="text-list" class="text-list">
+                    <!-- Populated by JavaScript -->
+                </ul>
+
+                <div class="nav-divider"></div>
+
+                <h2>Mode</h2>
+                <div class="mode-selector">
+                    <button id="view-mode-btn" class="mode-btn active">Individual View</button>
+                    <button id="compare-mode-btn" class="mode-btn">Compare Texts</button>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="content">
+                <!-- Individual Text View -->
+                <div id="individual-view" class="view-section active">
+                    <div class="view-header">
+                        <h2 id="text-title">Select a text to view analysis</h2>
+                        <p id="text-author" class="text-author"></p>
+                    </div>
+
+                    <div id="text-content" class="text-content">
+                        <p class="placeholder">Select a text from the sidebar to view its analysis</p>
+                    </div>
+
+                    <!-- Word Cloud Section -->
+                    <section id="wordcloud-section" class="analysis-section hidden">
+                        <h3>Word Cloud (Top 200 Words)</h3>
+                        <div id="wordcloud-container" class="wordcloud-container"></div>
+                    </section>
+
+                    <!-- Sentiment Analysis Section -->
+                    <section id="sentiment-section" class="analysis-section hidden">
+                        <h3>Sentiment Analysis</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Compound Score</div>
+                                <div id="sentiment-compound" class="metric-value large"></div>
+                                <div class="metric-description">Overall sentiment (-1 to +1)</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Positive</div>
+                                <div id="sentiment-positive" class="metric-value"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Neutral</div>
+                                <div id="sentiment-neutral" class="metric-value"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Negative</div>
+                                <div id="sentiment-negative" class="metric-value"></div>
+                            </div>
+                        </div>
+                        <canvas id="sentiment-chart" class="chart-canvas"></canvas>
+                    </section>
+
+                    <!-- Style Metrics Section -->
+                    <section id="style-section" class="analysis-section hidden">
+                        <h3>Style Metrics</h3>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Total Words</div>
+                                <div id="style-total-words" class="metric-value"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Unique Words</div>
+                                <div id="style-unique-words" class="metric-value"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Vocabulary Richness</div>
+                                <div id="style-vocab-richness" class="metric-value"></div>
+                                <div class="metric-description">Unique / Total words</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Avg Word Length</div>
+                                <div id="style-avg-word-length" class="metric-value"></div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Avg Sentence Length</div>
+                                <div id="style-avg-sentence-length" class="metric-value"></div>
+                                <div class="metric-description">Words per sentence</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Total Sentences</div>
+                                <div id="style-total-sentences" class="metric-value"></div>
+                            </div>
+                        </div>
+
+                        <h4>Readability Scores</h4>
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Flesch Reading Ease</div>
+                                <div id="style-flesch-ease" class="metric-value"></div>
+                                <div class="metric-description">Higher = easier to read</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Flesch-Kincaid Grade</div>
+                                <div id="style-flesch-grade" class="metric-value"></div>
+                                <div class="metric-description">U.S. grade level</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Gunning Fog Index</div>
+                                <div id="style-gunning-fog" class="metric-value"></div>
+                                <div class="metric-description">Years of education needed</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Comparison View -->
+                <div id="comparison-view" class="view-section">
+                    <div class="view-header">
+                        <h2>Compare Texts</h2>
+                        <p>Select two or more texts to compare their linguistic features</p>
+                    </div>
+
+                    <!-- Text Selection for Comparison -->
+                    <section class="comparison-selector">
+                        <h3>Select Texts to Compare</h3>
+                        <div id="comparison-checkboxes" class="checkbox-group">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                        <button id="run-comparison-btn" class="btn-primary">Compare Selected Texts</button>
+                    </section>
+
+                    <!-- Comparison Results -->
+                    <div id="comparison-results" class="comparison-results hidden">
+                        <!-- Sentiment Comparison -->
+                        <section class="comparison-section">
+                            <h3>Sentiment Comparison</h3>
+                            <canvas id="comparison-sentiment-chart" class="chart-canvas"></canvas>
+                        </section>
+
+                        <!-- Style Metrics Comparison -->
+                        <section class="comparison-section">
+                            <h3>Style Metrics Comparison</h3>
+                            <div class="table-responsive">
+                                <table id="style-comparison-table" class="comparison-table">
+                                    <!-- Populated by JavaScript -->
+                                </table>
+                            </div>
+                        </section>
+
+                        <!-- Vocabulary Overlap -->
+                        <section class="comparison-section">
+                            <h3>Vocabulary Analysis</h3>
+                            <div id="vocab-overlap-container">
+                                <!-- Populated by JavaScript -->
+                            </div>
+                        </section>
+
+                        <!-- Word Frequency Comparison -->
+                        <section class="comparison-section">
+                            <h3>Top Words Comparison</h3>
+                            <canvas id="word-frequency-chart" class="chart-canvas"></canvas>
+                        </section>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>Data source: Project Gutenberg | Analysis: NLTK, TextStat, VADER | Visualization: Chart.js, WordCloud2.js</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
